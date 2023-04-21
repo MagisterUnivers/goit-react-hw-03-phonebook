@@ -8,6 +8,7 @@ export class App extends Component {
   state = {
     contacts: [],
     filter: '',
+    custominput: '',
   };
 
   componentDidMount() {
@@ -18,6 +19,11 @@ export class App extends Component {
     } else {
       console.log('Contacts is Empty!');
     }
+
+    if (localStorage.getItem('custominput'))
+      this.setState({
+        custominput: JSON.parse(localStorage.getItem('custominput')),
+      });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -25,6 +31,12 @@ export class App extends Component {
     if (prevState.contacts !== this.state.contacts)
       // console.log('State updated');
       localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+
+    if (prevState.custominput !== this.state.custominput)
+      localStorage.setItem(
+        'custominput',
+        JSON.stringify(this.state.custominput)
+      );
   }
 
   /**
@@ -85,6 +97,16 @@ export class App extends Component {
 
     return (
       <>
+        <input
+          type="text"
+          name="custominput"
+          value={this.state.custominput}
+          className="result"
+          onChange={this.handleChange}
+          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+          title="Name"
+          required
+        />
         <ContactForm
           handleChange={this.handleChange}
           handleSubmit={this.handleSubmit}
