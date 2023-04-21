@@ -1,86 +1,77 @@
 import { Component } from 'react';
+import { ContactForm } from './ContactForm/ContactForm';
+import { ContactsList } from './ContactList/ContactList';
+import { Filter } from './Filter/Filter';
 import { nanoid } from 'nanoid';
-import { ContactForm, ContactList, Filter } from './index';
+
 export class App extends Component {
   state = {
-    contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
+    contacts: [],
     filter: '',
   };
-  addContact = e => {
+
+  handleSubmit = e => {
     e.preventDefault();
-    const {
-      name: { value: name },
-      number: { value: number },
-    } = e.target;
-    if (
-      this.state.contacts.find(
-        contact => contact.name.toLowerCase() === name.toLowerCase()
-      )
-    ) {
-      return alert(`${name} is already in contacts.`);
-    }
-    const contactObj = {
-      name,
-      number,
-      id: nanoid(),
-    };
-    this.setState(prevState => {
-      return { contacts: [...prevState.contacts, contactObj] };
+    const { name, number } = e.target.elements;
+    // console.log(e);
+    // console.log(name, number);
+    const USER_NAME = name.value;
+    const USER_NUMBER = number.value;
+    const ARRAY_NAMES = this.state.contacts.map(contact => {
+      return contact.name;
     });
-    Array.from(e.target).forEach(e => (e.value = ''));
-  };
-  deleteContact = id => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== id),
-    }));
-  };
-  filterContacts = e => {
-    this.setState({ filter: e.target.value });
-  };
-  renderContacts = () => {
-    if (this.state.filter) {
-      const normalizedFilter = this.state.filter.toLowerCase();
-      const filteredContacts = this.state.contacts.filter(contact =>
-        contact.name.toLowerCase().includes(normalizedFilter)
-      );
-      return filteredContacts;
+
+    if (!ARRAY_NAMES.includes(USER_NAME))
+      this.setState(prevState => {
+        return {
+          contacts: [
+            ...prevState.contacts,
+            { name: USER_NAME, number: USER_NUMBER, id: nanoid() },
+          ],
+        };
+      });
+    else {
+      alert(`${USER_NAME} already in contacts`);
     }
-    return this.state.contacts;
+    e.target.reset();
+  };
+
+  handleChange = evt => {
+    const { name } = evt.target;
+    this.setState({
+      [name]: evt.target.value,
+    });
+  };
+
+  changeId = id => {
+    // const newContacts = this.state.contacts.filter(
+    //   contact => contact.id !== id
+    // );
+    // this.setState({ contacts: newContacts });
+    this.setState(prevState => {
+      return {
+        contacts: prevState.contacts.filter(contact => contact.id !== id),
+      };
+    });
   };
 
   render() {
+    const filteredContacts = this.state.contacts.filter(el =>
+      el.name.toLowerCase().includes(this.state.filter.toLowerCase())
+    );
+
     return (
-      <div
-        style={{
-          paddingLeft: '15px',
-          //   height: '100%',
-          //   display: 'flex',
-          //   flexDirection: 'column',
-          //   justifyContent: 'center',
-          //   alignItems: 'center',
-          //   fontSize: 40,
-          //   color: '#010101',
-        }}
-      >
-        <h1>Phonebook</h1>
-
-        <ContactForm onSubmit={this.addContact} />
-
-        <h2>Contacts</h2>
+      <>
+        <ContactForm
+          handleChange={this.handleChange}
+          handleSubmit={this.handleSubmit}
+        />
         <Filter
-          onFilterElements={this.filterContacts}
-          value={this.state.filter}
+          filteredContacts={this.filteredContacts}
+          handleChange={this.handleChange}
         />
-        <ContactList
-          contacts={this.renderContacts()}
-          onClickDeleteBtn={this.deleteContact}
-        />
-      </div>
+        <ContactsList contacts={filteredContacts} changeId={this.changeId} />
+      </>
     );
   }
 }
