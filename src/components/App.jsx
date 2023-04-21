@@ -3,6 +3,7 @@ import { ContactForm } from './ContactForm/ContactForm';
 import { ContactsList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
 import { nanoid } from 'nanoid';
+import styled from 'styled-components';
 
 export class App extends Component {
   state = {
@@ -97,6 +98,9 @@ export class App extends Component {
 
     return (
       <>
+        <StyledButton type="submit" title="hello">
+          I am styled
+        </StyledButton>
         <input
           type="text"
           name="custominput"
@@ -120,3 +124,16 @@ export class App extends Component {
     );
   }
 }
+
+/**
+  |============================
+  | Styled components
+  |============================
+*/
+
+const StyledButton = styled.button`
+  background-color: tomato;
+  &:hover {
+    background-color: teal;
+  }
+`;
