@@ -10,6 +10,29 @@ export class App extends Component {
     filter: '',
   };
 
+  componentDidMount() {
+    console.log('App rendered!');
+    const LOCAL_STORAGE = localStorage.getItem('contacts');
+    if (LOCAL_STORAGE) {
+      this.setState({ contacts: JSON.parse(LOCAL_STORAGE) });
+    } else {
+      console.log('Contacts is Empty!');
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log('DOM Updated!');
+    if (prevState.contacts !== this.state.contacts)
+      // console.log('State updated');
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+  }
+
+  /**
+    |============================
+    | Methods
+    |============================
+  */
+
   handleSubmit = e => {
     e.preventDefault();
     const { name, number } = e.target.elements;
